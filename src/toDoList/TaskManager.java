@@ -3,8 +3,8 @@
 
 package toDoList;
 
+import java.time.LocalDate;
 import java.util.*;
-import java.time.LocalDateTime;
 public class TaskManager {
 	
 	private ArrayList<Task> taskList;
@@ -81,7 +81,7 @@ public class TaskManager {
 	
 	
 	// updating a task's due date (extension or misinput)
-	public void updateDueDate(String name, LocalDateTime dueDate) {
+	public void updateDueDate(String name, LocalDate dueDate) {
 		for (int i = 0; i < taskList.size(); i++) {
 			String taskName = taskList.get(i).getTaskName();
 			if (taskName.equals(name)) {
@@ -152,6 +152,20 @@ public class TaskManager {
 
 	public void sortByPriority() {
 	    Collections.sort(taskList, (t1, t2) -> t1.getPriority().compareTo(t2.getPriority()));
+	}
+
+	// TESTING, adding to work with gui
+
+	public ArrayList<Task> getTasks() {
+    	return taskList;
+	}
+
+	public void deleteTask(int index) {
+    	taskList.remove(index);
+	}
+
+	public void markComplete(int index) {
+    	taskList.get(index).setCompletionStatus(true);
 	}
 	
 }

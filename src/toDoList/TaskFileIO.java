@@ -1,13 +1,15 @@
 package toDoList;
 import java.io.*;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 /*
  * File Format (tasks.txt):
  *
  * taskName
- * dueDate (LocalDateTime string, or "null")
+ * dueDate (LocalDate string, or "null")
+ * dueTime (LocalTime string, or "null")
  * priority (LOW / MEDIUM / HIGH)
  * category (SCHOOL / WORK / PERSONAL / OTHER)
  * completionStatus (true / false)
@@ -17,11 +19,6 @@ import java.util.ArrayList;
  * ... (repeated for each subtask)
  * ---
  * (repeated for each task)
- *
- * Assumptions:
- * - Task names are stored one per line.
- * - File format must remain consistent between save and load.
- * - Corrupted tasks are skipped to prevent loading invalid data.
  */
 public class TaskFileIO {
     public static void saveTasks(TaskManager manager, String filename) {
@@ -89,10 +86,10 @@ public class TaskFileIO {
     private static void writeTask(PrintWriter writer, Task t) {
         writer.println(t.getTaskName());
         writer.println(t.getDueDate() != null ? t.getDueDate().toString() : "null");
+        writer.println(t.getDueTime() != null ? t.getDueTime().toString() : "null");
         writer.println(t.getPriority() != null ? t.getPriority().toString() : "null");
         writer.println(t.getCategory() != null ? t.getCategory().toString() : "null");
         writer.println(t.getCompletionStatus());
-        // t.subtasks is package-visible; if Task ever makes it private, add getSubtasks()
         ArrayList<Subtask> subtasks = t.subtasks;
         if (subtasks == null) {
             writer.println(0);
@@ -112,7 +109,6 @@ public class TaskFileIO {
         writer.println("---");
     }
 
-    // returns null if file is cut off or data cannot be parsed
     private static Task readTask(BufferedReader reader, String name) throws IOException {
         // --- due date ---
         String dateStr = reader.readLine();
@@ -120,12 +116,26 @@ public class TaskFileIO {
             System.out.println("File ended unexpectedly at due date for task '" + name + "', stopping");
             return null;
         }
-        LocalDateTime dueDate = null;
+        LocalDate dueDate = null;
         if (!dateStr.trim().equals("null")) {
             try {
-                dueDate = LocalDateTime.parse(dateStr.trim());
+                dueDate = LocalDate.parse(dateStr.trim());
             } catch (DateTimeParseException e) {
                 System.out.println("Warning: bad date format for task '" + name + "', setting to null");
+            }
+        }
+        // --- due time ---
+        String timeStr = reader.readLine();
+        if (timeStr == null) {
+            System.out.println("File ended unexpectedly at due time for task '" + name + "', stopping");
+            return null;
+        }
+        LocalTime dueTime = null;
+        if (!timeStr.trim().equals("null")) {
+            try {
+                dueTime = LocalTime.parse(timeStr.trim());
+            } catch (DateTimeParseException e) {
+                System.out.println("Warning: bad time format for task '" + name + "', setting to null");
             }
         }
         // --- priority ---
@@ -161,7 +171,12 @@ public class TaskFileIO {
             return null;
         }
         boolean completed = Boolean.parseBoolean(completedStr.trim());
-        Task t = new Task(name, dueDate, priority, category);
+        // build date string for Task constructor
+        String dateTimeStr = "";
+        if (dueDate != null) {
+            dateTimeStr = dueDate.toString() + (dueTime != null ? "T" + dueTime.toString() : "T00:00");
+        }
+        Task t = new Task(name, dateTimeStr, priority.toString(), category.toString());
         // --- subtasks ---
         String subtaskCountStr = reader.readLine();
         if (subtaskCountStr == null) {
@@ -185,30 +200,9 @@ public class TaskFileIO {
             }
             Subtask sub = new Subtask(subName.trim());
             sub.setStatus(Boolean.parseBoolean(subStatusStr.trim()));
-            // addSubtask() keeps completion in sync via changeCompleted() in Task
             t.addSubtask(sub);
         }
-        // set completion after subtasks so saved status is not overwritten by changeCompleted()
         t.setCompletionStatus(completed);
         return t;
     }
-
-    /*
-     * GUI integration (paste into TaskManagerGUI.java):
-     *
-     * saveBtn.addActionListener(e -> {
-     *     TaskFileIO.saveTasks(manager, "tasks.txt");
-     *     JOptionPane.showMessageDialog(this, "Tasks saved!");
-     * });
-     *
-     * loadBtn.addActionListener(e -> {
-     *     manager.getTaskList().clear();
-     *     TaskFileIO.loadTasks(manager, "tasks.txt");
-     *     refreshList();
-     *     refreshCalendar();
-     *     refreshWeekView();
-     *     refreshDueDateView();
-     *     JOptionPane.showMessageDialog(this, "Tasks loaded!");
-     * });
-     */
 }
