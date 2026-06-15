@@ -275,6 +275,14 @@ public class TaskManagerGUI extends JFrame {
         // top controls
 
         JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 25, 20));
+        JLabel appTitle = new JLabel("Focus Flow");
+        appTitle.setFont(new Font("Segoe UI", Font.BOLD, 28));
+        appTitle.setForeground(new Color(242,233,228));
+
+        topPanel.add(appTitle);
+        topPanel.add(Box.createHorizontalStrut(40));
+
+        
 
         JButton monthBtn = new JButton("Month");
 
