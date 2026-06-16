@@ -222,14 +222,12 @@ public class TaskManagerGUI extends JFrame {
 
 
 
-       /* The button that actually adds the subtask. When clicked it:
+       /* Button that actually adds the subtask
 
-
-         Checks if a task is selected in the task list — if not, shows a popup saying "Please select a task first"
-         Gets the text from subtaskField
-         Calls addSubtask() on whichever task is currently selected
-         Clears the text field
-         Calls refreshAll() to update all the views */
+         - Checks if a task is selected in the task list (or shows popup with "Please select a task first")
+         - Calls addSubtask() on selected
+         - Clears the text field
+         - Calls refreshAll() to update all the views */
        JButton addSubtaskBtn = new JButton("+ Add Subtask");
        addSubtaskBtn.setMaximumSize(new Dimension(240, 40));
        addSubtaskBtn.setBackground(new Color(74,78,105));
@@ -293,50 +291,6 @@ public class TaskManagerGUI extends JFrame {
        inputPanel.add(selectTaskLabel);
        inputPanel.add(Box.createVerticalStrut(6));
        inputPanel.add(taskScroll);
-
-
-       /*for (Subtask s : t.getSubtasks()) {
-           JPanel subRow = new JPanel(new FlowLayout(FlowLayout.LEFT, 12, 4));
-           subRow.setOpaque(false);
-           subRow.setBorder(BorderFactory.createEmptyBorder(0, 50, 0, 0));
-
-
-           JLabel subCircle = new JLabel(s.getStatus() ? "✓" : "");
-           subCircle.setPreferredSize(new Dimension(18, 18));
-           subCircle.setHorizontalAlignment(SwingConstants.CENTER);
-           subCircle.setOpaque(true);
-           subCircle.setBackground(new Color(58, 61, 90));
-           subCircle.setForeground(new Color(242, 233, 228));
-           subCircle.setBorder(BorderFactory.createLineBorder(new Color(154,140,152), 1, true));
-           subCircle.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-
-
-           JLabel subName = new JLabel(s.getStatus()
-                   ? "<html><strike>" + s.getSubName() + "</strike></html>"
-                   : s.getSubName());
-
-
-           subName.setForeground(new Color(220, 210, 225));
-           subName.setPreferredSize(new Dimension(220, 22));
-
-
-           subCircle.addMouseListener(new java.awt.event.MouseAdapter() {
-               public void mouseClicked(java.awt.event.MouseEvent e) {
-                   s.setStatus(!s.getStatus());
-                   t.changeCompleted();
-                   refreshAll();
-               }
-           });
-
-
-           subRow.add(Box.createHorizontalStrut(25));
-           subRow.add(subCircle);
-           subRow.add(new JLabel("↳"));
-           subRow.add(subName);
-
-
-           row.add(subRow);
-       }*/
 
 
        // many many buttons T-T
